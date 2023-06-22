@@ -19,11 +19,11 @@ environment {
         script {
           def workspace = "${params.ENVIRONMENT}"
           // Check if the Terraform workspace exists
-          def workspaceExists = sh(script: "terraform workspace list | grep -wq $workspace", returnStatus: true)
+          def workspaceExists = sh(script: "terraform workspace list -no-color | grep -wq $workspace", returnStatus: true)
           
           if (workspaceExists != 0) {
             // Create the Terraform workspace if it doesn't exist
-            sh "terraform workspace new $workspace"
+            sh "terraform workspace new $workspace -no-color"
           }
         }
       }
