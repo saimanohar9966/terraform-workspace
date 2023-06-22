@@ -22,32 +22,26 @@ pipeline {
 }
 
     
-    stage('Terraform Init') {
-      steps {
-        script {
-          def workspace = "${params.ENVIRONMENT}"
-          dir(workspace) {
-            // Switch to the selected workspace and initialize Terraform
-            sh "terraform init -no-color"
-          }
+ stage('Create Terraform Workspace') {
+  steps {
+    script {
+      def workspace = "${params.ENVIRONMENT}"
+      dir(workspace) {
+        // Initialize Terraform and configure the backend
+        sh "terraform init -no-color"
+        
+        // Check if the Terraform workspace exists
+        def workspaceExists = sh(script: "terraform workspace list -no-color | grep -wq $workspace", returnStatus: true)
+        
+        if (workspaceExists != 0) {
+          // Create the Terraform workspace if it doesn't exist
+          sh "terraform workspace new $workspace -no-color"
         }
       }
     }
-    
-    stage('Create Terraform Workspace') {
-      steps {
-        script {
-          def workspace = "${params.ENVIRONMENT}"
-          // Check if the Terraform workspace exists
-          def workspaceExists = sh(script: "terraform workspace list -no-color | grep -wq $workspace", returnStatus: true)
-          
-          if (workspaceExists != 0) {
-            // Create the Terraform workspace if it doesn't exist
-            sh "terraform workspace new $workspace -no-color"
-          }
-        }
-      }
-    }
+  }
+}
+
     
     stage('Terraform Plan') {
       steps {
