@@ -15,21 +15,16 @@ pipeline {
         ])
       }
     }
-        stage('Terraform Init') {
+    
+    stage('Terraform Init') {
       steps {
         withCredentials([
-          [
-            $class: 'AmazonWebServicesCredentialsBinding',
-            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-            credentialsId: 'sai'
-          ]
+          amazonWebServicesCredentials(credentialsId: 'sai', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
         ]) {
           script {
-            def workspace = "${params.ENVIRONMENT}"
+            def workspace = params.ENVIRONMENT
             dir(workspace) {
-              // Switch to the selected workspace and initialize Terraform
-              sh "terraform workspace select $workspace"
+              sh "terraform workspace select ${workspace}"
               sh "terraform init -no-color"
             }
           }
@@ -40,13 +35,11 @@ pipeline {
     stage('Create Terraform Workspace') {
       steps {
         script {
-          def workspace = "${params.ENVIRONMENT}"
-          // Check if the Terraform workspace exists
-          def workspaceExists = sh(script: "terraform workspace list -no-color | grep -wq $workspace", returnStatus: true)
+          def workspace = params.ENVIRONMENT
+          def workspaceExists = sh(script: "terraform workspace list -no-color | grep -wq ${workspace}", returnStatus: true)
           
           if (workspaceExists != 0) {
-            // Create the Terraform workspace if it doesn't exist
-            sh "terraform workspace new $workspace -no-color"
+            sh "terraform workspace new ${workspace} -no-color"
           }
         }
       }
@@ -55,17 +48,11 @@ pipeline {
     stage('Terraform Plan') {
       steps {
         withCredentials([
-          [
-            $class: 'AmazonWebServicesCredentialsBinding',
-            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-            credentialsId: 'sai'
-          ]
+          amazonWebServicesCredentials(credentialsId: 'sai', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
         ]) {
           script {
-            def workspace = "${params.ENVIRONMENT}"
+            def workspace = params.ENVIRONMENT
             dir(workspace) {
-              // Execute Terraform plan for the selected workspace
               sh "terraform plan -no-color"
             }
           }
@@ -76,17 +63,11 @@ pipeline {
     stage('Terraform Apply') {
       steps {
         withCredentials([
-          [
-            $class: 'AmazonWebServicesCredentialsBinding',
-            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-            credentialsId: 'sai'
-          ]
+          amazonWebServicesCredentials(credentialsId: 'sai', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
         ]) {
           script {
-            def workspace = "${params.ENVIRONMENT}"
+            def workspace = params.ENVIRONMENT
             dir(workspace) {
-              // Apply the changes and create the S3 bucket for the selected workspace
               sh "terraform apply -no-color"
             }
           }
