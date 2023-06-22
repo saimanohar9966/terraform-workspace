@@ -28,6 +28,7 @@ pipeline {
       def workspace = "${params.ENVIRONMENT}"
       dir(workspace) {
         // Initialize Terraform and configure the backend
+        sh "rm -rf .terraform .terraform.lock.hcl"
         sh "terraform init -no-color"
         
         // Check if the Terraform workspace exists
@@ -42,7 +43,17 @@ pipeline {
   }
 }
 
-    
+    stage('Terraform init') {
+      steps {
+        script {
+          def workspace = "${params.ENVIRONMENT}"
+          dir(workspace) {
+            // Execute Terraform plan for the selected workspace
+            sh "terraform init -no-color"
+          }
+        }
+      }
+    }    
     stage('Terraform Plan') {
       steps {
         script {
