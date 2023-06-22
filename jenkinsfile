@@ -2,10 +2,8 @@ pipeline {
   agent any
   
   environment {
-        AWS_REGION = 'ap-south-1'
-        AWS_ACCESS_KEY_ID = credentials('aws-credentials')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-credentials')
-    }
+    AWS_REGION = 'ap-south-1'
+  }
   
   stages {
     stage('Checkout') {
@@ -21,13 +19,18 @@ pipeline {
     stage('Terraform Init') {
       steps {
         withCredentials([
-          amazonWebServicesCredentials(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+          [
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'aws-credentials',
+            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+          ]
         ]) {
           script {
             def workspace = params.ENVIRONMENT
             dir(workspace) {
-              sh "terraform workspace select ${workspace}"
-              sh "terraform init -no-color"
+              sh 'terraform workspace select ${workspace}'
+              sh 'terraform init -no-color'
             }
           }
         }
@@ -50,12 +53,17 @@ pipeline {
     stage('Terraform Plan') {
       steps {
         withCredentials([
-          amazonWebServicesCredentials(credentialsId: 'sai', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+          [
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'aws-credentials',
+            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+          ]
         ]) {
           script {
             def workspace = params.ENVIRONMENT
             dir(workspace) {
-              sh "terraform plan -no-color"
+              sh 'terraform plan -no-color'
             }
           }
         }
@@ -65,12 +73,17 @@ pipeline {
     stage('Terraform Apply') {
       steps {
         withCredentials([
-          amazonWebServicesCredentials(credentialsId: 'sai', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+          [
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'aws-credentials',
+            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+          ]
         ]) {
           script {
             def workspace = params.ENVIRONMENT
             dir(workspace) {
-              sh "terraform apply -no-color"
+              sh 'terraform apply -no-color'
             }
           }
         }
