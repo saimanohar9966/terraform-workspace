@@ -43,28 +43,21 @@ pipeline {
   }
 }
 
-    stage('Terraform init') {
-      steps {
-        script {
-          def workspace = "${params.ENVIRONMENT}"
-          dir(workspace) {
-            // Execute Terraform plan for the selected workspace
-            sh "terraform init -no-color"
-          }
-        }
-      }
-    }    
     stage('Terraform Plan') {
-      steps {
-        script {
-          def workspace = "${params.ENVIRONMENT}"
-          dir(workspace) {
-            // Execute Terraform plan for the selected workspace
-            sh "terraform plan -no-color"
-          }
-        }
+  steps {
+    script {
+      def workspace = "${params.ENVIRONMENT}"
+      dir(workspace) {
+        // Initialize Terraform and download plugins
+        sh "terraform init -no-color"
+        
+        // Execute Terraform plan for the selected workspace
+        sh "terraform plan -no-color"
       }
     }
+  }
+}
+
     
     stage('Terraform Apply') {
       steps {
