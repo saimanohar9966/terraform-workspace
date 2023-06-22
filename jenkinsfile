@@ -9,7 +9,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git 'https://github.com/your-repo.git'
+        checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/saimanohar9966/terraform-workspace.git']]])
       }
     }
     
@@ -59,7 +59,7 @@ pipeline {
           def workspace = "${params.ENVIRONMENT}"
           dir(workspace) {
             // Apply the changes and create the S3 bucket for the selected workspace
-            sh "terraform apply -auto-approve"
+            sh "terraform apply"
           }
         }
       }
