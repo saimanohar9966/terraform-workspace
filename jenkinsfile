@@ -2,8 +2,10 @@ pipeline {
   agent any
   
   environment {
-    AWS_REGION = 'ap-south-1'
-  }
+        AWS_REGION = 'ap-south-1'
+        AWS_ACCESS_KEY_ID = credentials('aws-credentials')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-credentials')
+    }
   
   stages {
     stage('Checkout') {
@@ -19,7 +21,7 @@ pipeline {
     stage('Terraform Init') {
       steps {
         withCredentials([
-          amazonWebServicesCredentials(credentialsId: 'sai', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+          amazonWebServicesCredentials(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
         ]) {
           script {
             def workspace = params.ENVIRONMENT
