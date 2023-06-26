@@ -25,7 +25,7 @@ pipeline {
  stage('Create Terraform Workspace') {
   steps {
     script {
-      def workspace = "/var/lib/jenkins/workspace/workspace-terraform/${params.ENVIRONMENT}"
+      def workspace = "{params.ENVIRONMENT}"
       dir(workspace) {
         // Initialize Terraform and configure the backend
         sh "rm -rf .terraform .terraform.lock.hcl"
