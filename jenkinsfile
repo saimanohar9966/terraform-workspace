@@ -32,7 +32,6 @@ pipeline {
             sh "ls -lart" // Added for debugging
             sh "pwd" // Added for debugging
             // Initialize Terraform and configure the backend
-            sh "rm -rf .terraform .terraform.lock.hcl"
             sh "terraform init -no-color"
             
             // Check if the Terraform workspace exists
