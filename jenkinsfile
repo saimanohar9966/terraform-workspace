@@ -10,7 +10,7 @@ pipeline {
       steps {
         script {
           def workspace = params.ENVIRONMENT
-          dir(workspace) {
+          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}") {
             checkout([
               $class: 'GitSCM',
               branches: [[name: '*/main']],
@@ -25,18 +25,17 @@ pipeline {
       steps {
         script {
           def workspace = params.ENVIRONMENT
-          dir(workspace) {
+          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}/terraform-workspace") {
             // Initialize Terraform and configure the backend
             sh "rm -rf .terraform .terraform.lock.hcl"
-sh "cd /var/lib/jenkins/workspace/workspace-terraform/dev/terraform-workspace"
             sh "terraform init -no-color"
             
             // Check if the Terraform workspace exists
-            def workspaceExists = sh(script: "terraform workspace list -no-color | grep -wq $workspace", returnStatus: true)
+            def workspaceExists = sh(script: "terraform workspace list -no-color | grep -wq ${workspace}", returnStatus: true)
             
             if (workspaceExists != 0) {
               // Create the Terraform workspace if it doesn't exist
-              sh "terraform workspace new $workspace -no-color"
+              sh "terraform workspace new ${workspace} -no-color"
             }
           }
         }
@@ -47,10 +46,9 @@ sh "cd /var/lib/jenkins/workspace/workspace-terraform/dev/terraform-workspace"
       steps {
         script {
           def workspace = params.ENVIRONMENT
-sh "cd /var/lib/jenkins/workspace/workspace-terraform/dev/terraform-workspace"
-          dir(workspace) {
+          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}/terraform-workspace") {
             // Execute Terraform plan for the selected workspace
-            sh "terraform plan  -no-color"
+            sh "terraform plan -no-color"
           }
         }
       }
@@ -60,10 +58,9 @@ sh "cd /var/lib/jenkins/workspace/workspace-terraform/dev/terraform-workspace"
       steps {
         script {
           def workspace = params.ENVIRONMENT
-sh "cd /var/lib/jenkins/workspace/workspace-terraform/dev/terraform-workspace"
-          dir(workspace) {
+          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}/terraform-workspace") {
             // Apply the changes for the selected workspace
-            sh "terraform apply  -no-color"
+            sh "terraform apply -no-color"
           }
         }
       }
