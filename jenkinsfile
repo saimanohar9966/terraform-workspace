@@ -25,7 +25,7 @@ pipeline {
  stage('Create Terraform Workspace') {
   steps {
     script {
-      def workspace = "${params.ENVIRONMENT}"
+      def workspace = "/var/lib/jenkins/workspace/workspace-terraform/${params.ENVIRONMENT}"
       dir(workspace) {
         // Initialize Terraform and configure the backend
         sh "rm -rf .terraform .terraform.lock.hcl"
@@ -46,10 +46,10 @@ pipeline {
     stage('Terraform Plan') {
   steps {
     script {
-      def workspace = "${params.ENVIRONMENT}"
+      def workspace = "/var/lib/jenkins/workspace/workspace-terraform/${params.ENVIRONMENT}"
       dir(workspace) {
         // Initialize Terraform and download plugins
-        sh "terraform init -no-color"
+        // sh "terraform init -no-color"
         
         // Execute Terraform plan for the selected workspace
         sh "terraform plan -no-color"
@@ -62,7 +62,7 @@ pipeline {
     stage('Terraform Apply') {
       steps {
         script {
-          def workspace = "${params.ENVIRONMENT}"
+          def workspace = "/var/lib/jenkins/workspace/workspace-terraform/${params.ENVIRONMENT}"
           dir(workspace) {
             // Apply the changes and create the S3 bucket for the selected workspace
             sh "terraform apply -no-color"
