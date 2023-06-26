@@ -28,7 +28,7 @@ pipeline {
       steps {
         script {
           def workspace = params.ENVIRONMENT
-          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}/terraform-workspace") {
+          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}") {
             sh "ls -lart" // Added for debugging
             sh "pwd" // Added for debugging
             // Initialize Terraform and configure the backend
@@ -51,7 +51,7 @@ pipeline {
       steps {
         script {
           def workspace = params.ENVIRONMENT
-          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}/terraform-workspace") {
+          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}") {
             sh "ls -lart" // Added for debugging
             sh "pwd" // Added for debugging
             // Execute Terraform plan for the selected workspace
@@ -65,7 +65,7 @@ pipeline {
       steps {
         script {
           def workspace = params.ENVIRONMENT
-          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}/terraform-workspace") {
+          dir("/var/lib/jenkins/workspace/workspace-terraform/${workspace}") {
             sh "ls -lart" // Added for debugging
             sh "pwd" // Added for debugging
             // Apply the changes for the selected workspace
